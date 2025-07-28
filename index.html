@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasmy Elzha Mathew</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00ff41;
+            --secondary-color: #0d1117;
+            --accent-color: #00d4ff;
+            --warning-color: #ff6b6b;
+            --success-color: #00ff41;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --code-bg: #161b22;
+            --terminal-green: #00ff41;
+            --matrix-green: #00ff00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Terminal Background Animation */
+        .terminal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100px;
+            color: var(--terminal-green);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            opacity: 0.1;
+            animation: matrixFall linear infinite;
+        }
+
+        @keyframes matrixFall {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--terminal-green);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '>';
+            color: var(--terminal-green);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--terminal-green);
+        }
+
+        .nav-links a::before {
+            content: '# ';
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover::before,
+        .nav-links a.active::before {
+            opacity: 1;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 2px;
+            background: var(--terminal-green);
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Section Styling */
+        section {
+            min-height: 100vh;
+            padding: 100px 2rem 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Terminal Window Component */
+        .terminal-window {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .terminal-header {
+            background: var(--bg-tertiary);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27ca3f; }
+
+        .terminal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-left: 1rem;
+        }
+
+        .terminal-content {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 4rem;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .hero-content {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-terminal {
+            animation: slideInRight 1s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .hero-content h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--terminal-green);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        .hero-content h2 {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .hero-content .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--terminal-green);
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--terminal-green);
+            color: var(--bg-primary);
+            border-color: var(--terminal-green);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--terminal-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--terminal-green);
+            border-color: var(--terminal-green);
+        }
+
+        .btn-secondary:hover {
+            background: var(--terminal-green);
+            color: var(--bg-primary);
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            color: var(--terminal-green);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-header h2::before {
+            content: '// ';
+            color: var(--text-muted);
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+        }
+
+        /* Experience Section */
+        .experience-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .experience-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .experience-card:hover {
+            border-color: var(--terminal-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .experience-title h3 {
+            font-size: 1.3rem;
+            color: var(--terminal-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .experience-company {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .experience-period {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .experience-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .experience-achievements {
+            list-style: none;
+        }
+
+        .experience-achievements li {
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .experience-achievements li::before {
+            content: '→';
+            color: var(--terminal-green);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Skills Section */
+        .skills-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .skills-category {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .skills-category h3 {
+            background: var(--bg-tertiary);
+            color: var(--terminal-green);
+            padding: 1rem;
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skills-list {
+            padding: 1.5rem;
+        }
+
+        .skill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .skill-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .skill-level {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terminal-green);
+            font-size: 0.8rem;
+        }
+
+        .skill-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--terminal-green), var(--accent-color));
+            border-radius: 2px;
+            transition: width 1s ease-out;
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--terminal-green);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+        }
+
+        .project-header {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .project-title {
+            font-size: 1.2rem;
+            color: var(--terminal-green);
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .project-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-tag {
+            background: var(--bg-tertiary);
+            color: var(--terminal-green);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .project-link:hover {
+            color: var(--terminal-green);
+        }
+
+        /* Contact Section */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            color: var(--terminal-green);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            border-color: var(--terminal-green);
+        }
+
+        .contact-item i {
+            color: var(--terminal-green);
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .contact-item .contact-details strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-item .contact-details span {
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .contact-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--terminal-green);
+            box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--terminal-green);
+            transform: translateY(-2px);
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .skills-container {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 80px 1rem 50px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-bg">
+        <div class="matrix-rain" id="matrixRain"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#home" class="logo">jasmy.dev</a>
+            <ul class="nav-links">
+                <li><a href="#home">home</a></li>
+                <li><a href="#about">about</a></li>
+                <li><a href="#experience">experience</a></li>
+                <li><a href="#skills">skills</a></li>
+                <li><a href="#projects">projects</a></li>
+                <li><a href="#contact">contact</a></li>
+            </ul>
+            <div class="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>JASMY ELZHA MATHEW</h1>
+            <h2>Security Focused Software Engineer</h2>
+            <p class="subtitle">// 5+ years securing enterprise systems & building resilient software solutions</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">500K+</div>
+                    <div class="stat-label">Users Protected</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">System Uptime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">40%</div>
+                    <div class="stat-label">Vulnerability Reduction</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Security Breaches</div>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="#projects" class="btn btn-primary">
+                    <i class="fas fa-code"></i> View Projects
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <i class="fas fa-terminal"></i> Connect
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-terminal">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-title">jasmy@security:~$</div>
+                </div>
+                <div class="terminal-content">
+                    <div style="color: var(--terminal-green);">$ whoami</div>
+                    <div style="color: var(--text-secondary); margin: 0.5rem 0;">Security Focused Software Engineer</div>
+                    
+                    <div style="color: var(--terminal-green); margin-top: 1rem;">$ cat experience.txt</div>
+                    <div style="color: var(--text-secondary); margin: 0.5rem 0;">
+                        → Maryland Dept of IT (Current)<br>
+                        → NASCO Insurance Group<br>
+                        → Industrus Tech India<br>
+                        → 5+ years in security
+                    </div>
+                    
+                    <div style="color: var(--terminal-green); margin-top: 1rem;">$ ls skills/</div>
+                    <div style="color: var(--text-secondary); margin: 0.5rem 0;">
+                        IAM/ Cloud-Security/ Python/<br>
+                        Penetration-Testing/ SIEM/<br>
+                        Threat-Detection/ Compliance/
+                    </div>
+                    
+                    <div style="color: var(--terminal-green); margin-top: 1rem;">$ █</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="fade-in">
+        <div class="section-header">
+            <h2>About</h2>
+            <p>Results-driven cybersecurity professional with expertise in secure software development</p>
+        </div>
+        
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <div class="terminal-title">about-jasmy.md</div>
+            </div>
+            <div class="terminal-content">
+                <div style="color: var(--accent-color); margin-bottom: 1rem;">## Professional Summary</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Results-driven Cybersecurity Professional with <span style="color: var(--terminal-green); font-weight: bold;">5+ years of experience</span> delivering secure software solutions and risk mitigation strategies. Currently engineering Child Support Management Services for Maryland Department of IT serving <span style="color: var(--terminal-green); font-weight: bold;">500,000+ beneficiaries</span>.
+                </p>
+                
+                <div style="color: var(--accent-color); margin-bottom: 1rem;">## Key Achievements</div>
+                <ul style="color: var(--text-secondary); list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 0.5rem;">→ <span style="color: var(--success-color);">Reduced security vulnerabilities by 40%</span> through comprehensive threat assessments</li>
+                    <li style="margin-bottom: 0.5rem;">→ <span style="color: var(--success-color);">Maintained 99.9% uptime</span> across multi-million dollar insurance systems</li>
+                    <li style="margin-bottom: 0.5rem;">→ <span style="color: var(--success-color);">Zero data breaches</span> in enterprise environments under my management</li>
+                    <li style="margin-bottom: 0.5rem;">→ Expert in <span style="color: var(--terminal-green);">cloud security architecture</span> and compliance management</li>
+                </ul>
+                
+                <div style="color: var(--accent-color); margin: 1.5rem 0 1rem;">## Education</div>
+                <div style="color: var(--text-secondary);">
+                    <strong style="color: var(--terminal-green);">M.S. Cybersecurity in Computer Science</strong> | GPA: 3.84<br>
+                    The George Washington University | May 2024<br><br>
+                    <strong style="color: var(--terminal-green);">B.Tech Computer Science and Engineering</strong> | GPA: 3.78<br>
+                    Saintgits College of Engineering, Kerala, India | July 2021
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="fade-in">
+        <div class="section-header">
+            <h2>Experience</h2>
+            <p>Building secure systems across government, insurance, and startup environments</p>
+        </div>
+
+        <div class="experience-grid">
+            <div class="experience-card">
+                <div class="experience-header">
+                    <div class="experience-title">
+                        <h3>Software Engineer</h3>
+                        <div class="experience-company">Providenz Maryland</div>
+                    </div>
+                    <div class="experience-period">Sep 2024 - Present</div>
+                </div>
+                <div class="experience-description">
+                    <strong>Project:</strong> Child Support Management Services (CSMS) for Maryland Department of IT
+                </div>
+                <ul class="experience-achievements">
+                    <li>Architect and develop secure software solutions for state-wide child support management system serving <strong>500,000+ beneficiaries</strong></li>
+                    <li>Implement robust security controls and encryption protocols to protect sensitive financial and personal data in compliance with federal regulations</li>
+                    <li>Collaborate with cross-functional teams to ensure security-by-design principles throughout the software development lifecycle</li>
+                    <li>Conduct security code reviews and vulnerability assessments to maintain system integrity and data confidentiality</li>
+                </ul>
+            </div>
+
+            <div class="experience-card">
+                <div class="experience-header">
+                    <div class="experience-title">
+                        <h3>Assistant Systems Engineer</h3>
+                        <div class="experience-company">NASCO Insurance Group (Tata Consultancy Services)</div>
+                    </div>
+                    <div class="experience-period">Aug 2021 - Aug 2022</div>
+                </div>
+                <div class="experience-description">
+                    Remote position managing enterprise insurance system security operations
+                </div>
+                <ul class="experience-achievements">
+                    <li>Managed security operations for multi-million dollar insurance systems, maintaining <strong>99.9% system uptime with zero security incidents</strong></li>
+                    <li>Implemented automated security monitoring solutions reducing threat detection time by <strong>60%</strong> and improving incident response efficiency</li>
+                    <li>Conducted comprehensive security assessments and vulnerability management across <strong>200+ enterprise endpoints</strong></li>
+                    <li>Developed and maintained security documentation, policies, and procedures ensuring SOX and regulatory compliance</li>
+                    <li>Collaborated with global security teams to enhance threat intelligence sharing and security posture improvement</li>
+                </ul>
+            </div>
+
+            <div class="experience-card">
+                <div class="experience-header">
+                    <div class="experience-title">
+                        <h3>Junior Security Engineer</h3>
+                        <div class="experience-company">Industrus Tech India</div>
+                    </div>
+                    <div class="experience-period">May 2019 - Jul 2021</div>
+                </div>
+                <div class="experience-description">
+                    Startup environment security specialist building foundational security infrastructure
+                </div>
+                <ul class="experience-achievements">
+                    <li>Built security infrastructure from ground up for startup environment, establishing foundational security policies and procedures across <strong>5+ client projects</strong></li>
+                    <li>Conducted hands-on security assessments and penetration testing for emerging technology companies, identifying critical vulnerabilities in resource-constrained environments</li>
+                    <li>Developed cost-effective security solutions for startups, implementing open-source SIEM tools and automated monitoring systems within limited budgets</li>
+                    <li>Collaborated directly with C-level executives and technical founders to establish security frameworks and compliance roadmaps for scaling businesses</li>
+                    <li>Wore multiple hats including security analyst, consultant, and trainer, delivering end-to-end security services for early-stage companies seeking rapid market entry</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="fade-in">
+        <div class="section-header">
+            <h2>Skills</h2>
+            <p>Comprehensive expertise spanning security engineering and software development</p>
+        </div>
+
+        <div class="skills-container">
+            <div class="skills-category">
+                <h3><i class="fas fa-shield-alt"></i> Identity & Access Management</h3>
+                <div class="skills-list">
+                    <div class="skill-item">
+                        <span class="skill-name">Authentication & Authorization Design</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 95%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Single Sign-On (SSO) Implementation</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Zero Trust Architecture</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Privileged Access Management</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3><i class="fas fa-cog"></i> Security Engineering</h3>
+                <div class="skills-list">
+                    <div class="skill-item">
+                        <span class="skill-name">Infrastructure-as-Code (IaC)</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">CI/CD Pipeline Security</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Secrets Management</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 92%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Automated Security Testing</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 87%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3><i class="fas fa-cloud"></i> Cloud & Infrastructure</h3>
+                <div class="skills-list">
+                    <div class="skill-item">
+                        <span class="skill-name">AWS Security Services</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Azure Security Center</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Container Security (Docker/K8s)</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 82%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Network Security</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3><i class="fas fa-code"></i> Programming & Automation</h3>
+                <div class="skills-list">
+                    <div class="skill-item">
+                        <span class="skill-name">Python</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 95%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">PowerShell</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Terraform</span>
+                        <span class="skill-level">Advanced</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">REST APIs</span>
+                        <span class="skill-level">Expert</span>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="fade-in">
+        <div class="section-header">
+            <h2>Projects</h2>
+            <p>Key projects demonstrating security expertise and technical leadership</p>
+        </div>
+
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title">Cloud Security Architecture & Threat Detection</div>
+                    <div class="project-subtitle">The George Washington University | 2024</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">
+                        Designed and implemented comprehensive cloud security architecture using AWS Security Services, including GuardDuty, CloudTrail, and Config. Developed automated threat detection system using Python and machine learning algorithms, achieving 95% accuracy in identifying anomalous network behavior.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">AWS</span>
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Machine Learning</span>
+                        <span class="tech-tag">GuardDuty</span>
+                        <span class="tech-tag">CloudTrail</span>
+                        <span class="tech-tag">SIEM</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Jasmy-Elzha-Mathew-1715" class="project-link">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title">E-Commerce Security Assessment Framework</div>
+                    <div class="project-subtitle">The George Washington University | 2023</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">
+                        Conducted comprehensive security assessment of simulated e-commerce platform, identifying 25+ critical vulnerabilities including SQL injection and XSS attacks. Developed automated penetration testing framework using Python and OWASP methodologies, reducing manual testing time by 60%.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">OWASP</span>
+                        <span class="tech-tag">Penetration Testing</span>
+                        <span class="tech-tag">SQL Injection</span>
+                        <span class="tech-tag">XSS</span>
+                        <span class="tech-tag">PCI-DSS</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Jasmy-Elzha-Mathew-1715" class="project-link">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title">Child Support Management System (CSMS)</div>
+                    <div class="project-subtitle">Maryland Department of IT | 2024-Present</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">
+                        Currently architecting and developing secure software solutions for state-wide child support management system serving 500,000+ beneficiaries. Implementing robust security controls, encryption protocols, and compliance measures for sensitive financial and personal data.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Java</span>
+                        <span class="tech-tag">Spring Security</span>
+                        <span class="tech-tag">Encryption</span>
+                        <span class="tech-tag">Federal Compliance</span>
+                        <span class="tech-tag">PostgreSQL</span>
+                        <span class="tech-tag">OAuth 2.0</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#" class="project-link">
+                            <i class="fas fa-lock"></i> Confidential
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title">Enterprise Security Monitoring System</div>
+                    <div class="project-subtitle">NASCO Insurance Group | 2021-2022</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">
+                        Implemented automated security monitoring solutions for multi-million dollar insurance systems, reducing threat detection time by 60%. Managed security operations across 200+ enterprise endpoints while maintaining 99.9% uptime with zero security incidents.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">SIEM</span>
+                        <span class="tech-tag">Splunk</span>
+                        <span class="tech-tag">PowerShell</span>
+                        <span class="tech-tag">SOX Compliance</span>
+                        <span class="tech-tag">Threat Intelligence</span>
+                        <span class="tech-tag">Incident Response</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#" class="project-link">
+                            <i class="fas fa-building"></i> Enterprise
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title">Startup Security Infrastructure</div>
+                    <div class="project-subtitle">Industrus Tech India | 2019-2021</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">
+                        Built security infrastructure from ground up for multiple startup clients, establishing foundational security policies and procedures across 5+ projects. Developed cost-effective security solutions using open-source SIEM tools and automated monitoring systems.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Open Source SIEM</span>
+                        <span class="tech-tag">Security Policies</span>
+                        <span class="tech-tag">Vulnerability Assessment</span>
+                        <span class="tech-tag">Compliance Framework</span>
+                        <span class="tech-tag">Security Training</span>
+                        <span class="tech-tag">Risk Assessment</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Jasmy-Elzha-Mathew-1715" class="project-link">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title">IAM Security Suite</div>
+                    <div class="project-subtitle">Personal Project | 2024</div>
+                </div>
+                <div class="project-content">
+                    <p class="project-description">
+                        Comprehensive Identity and Access Management solution featuring SSO implementation, multi-factor authentication, and zero-trust architecture principles. Built with modern security protocols and automated provisioning capabilities.
+                    </p>
+                    <div class="project-tech">
+                        <span class="tech-tag">OAuth 2.0</span>
+                        <span class="tech-tag">SAML 2.0</span>
+                        <span class="tech-tag">JWT</span>
+                        <span class="tech-tag">MFA</span>
+                        <span class="tech-tag">RBAC</span>
+                        <span class="tech-tag">Zero Trust</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Jasmy-Elzha-Mathew-1715" class="project-link">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="fade-in">
+        <div class="section-header">
+            <h2>Contact</h2>
+            <p>Let's discuss cybersecurity opportunities and collaborate on innovative solutions</p>
+        </div>
+
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>// Get in touch</h3>
+                
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div class="contact-details">
+                        <strong>Email</strong>
+                        <span>jasmyelzhamathew@gmail.com</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="contact-details">
+                        <strong>Location</strong>
+                        <span>Houston, TX</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    <div class="contact-details">
+                        <strong>LinkedIn</strong>
+                        <span>linkedin.com/in/jasmy-elzha-mathew</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fab fa-github"></i>
+                    <div class="contact-details">
+                        <strong>GitHub</strong>
+                        <span>github.com/Jasmy-Elzha-Mathew-1715</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <div class="dot red"></div>
+                            <div class="dot yellow"></div>
+                            <div class="dot green"></div>
+                        </div>
+                        <div class="terminal-title">send-message.sh</div>
+                    </div>
+                    <div class="terminal-content">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">$ echo "Your Name:"</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">$ echo "Your Email:"</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">$ echo "Subject:"</label>
+                                <input type="text" id="subject" name="subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">$ cat > message.txt</label>
+                                <textarea id="message" name="message" placeholder="Your message here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-paper-plane"></i> ./send-message.sh
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://github.com/Jasmy-Elzha-Mathew-1715" title="GitHub" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/jasmy-elzha-mathew" title="LinkedIn" target="_blank">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:jasmyelzhamathew@gmail.com" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="tel:+15713377721" title="Phone">
+                    <i class="fas fa-phone"></i>
+                </a>
+            </div>
+            <p class="footer-text">
+                © 2025 Jasmy Elzha Mathew
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Matrix rain effect
+        function createMatrixRain() {
+            const matrixRain = document.getElementById('matrixRain');
+            const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const columnCount = Math.floor(window.innerWidth / 20);
+
+            for (let i = 0; i < columnCount; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = i * 20 + 'px';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.animationDelay = Math.random() * 5 + 's';
+                
+                let columnText = '';
+                for (let j = 0; j < 20; j++) {
+                    columnText += characters.charAt(Math.floor(Math.random() * characters.length)) + '<br>';
+                }
+                column.innerHTML = columnText;
+                
+                matrixRain.appendChild(column);
+            }
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenu.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Active navigation highlighting
+        const sections = document.querySelectorAll('section');
+        const navItems = document.querySelectorAll('.nav-links a');
+
+        function updateActiveNav() {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${current}`) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Fade in animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Skill bar animation
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const skillBars = entry.target.querySelectorAll('.skill-progress');
+                    skillBars.forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.transform = 'scaleX(1)';
+                        }, index * 200);
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.skills-category').forEach(category => {
+            category.querySelectorAll('.skill-progress').forEach(bar => {
+                bar.style.transformOrigin = 'left';
+                bar.style.transform = 'scaleX(0)';
+                bar.style.transition = 'transform 1s ease-out';
+            });
+            skillObserver.observe(category);
+        });
+
+        // Contact form handling
+        document.querySelector('.contact-form form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const name = formData.get('name');
+            const email = formData.get('email');
+            const subject = formData.get('subject');
+            const message = formData.get('message');
+            
+            if (!name || !email || !subject || !message) {
+                alert('$ Error: All fields are required');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('$ Error: Please enter a valid email address');
+                return;
+            }
+            
+            alert('$ Message sent successfully! I\'ll get back to you soon.');
+            this.reset();
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createMatrixRain();
+            updateActiveNav();
+        });
+
+        window.addEventListener('scroll', updateActiveNav);
+        window.addEventListener('resize', () => {
+            document.getElementById('matrixRain').innerHTML = '';
+            createMatrixRain();
+        });
+    </script>
+</body>
+</html>
